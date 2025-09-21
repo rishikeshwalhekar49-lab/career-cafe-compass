@@ -2,41 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Career Café Design System - Warm coffee house theme
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Café Theme Colors */
+    --background: 45 75% 98%;
+    --foreground: 15 25% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 45 50% 96%;
+    --card-foreground: 15 25% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 45 50% 96%;
+    --popover-foreground: 15 25% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 25 63% 32%;
+    --primary-foreground: 45 75% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 35 45% 85%;
+    --secondary-foreground: 15 25% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 40 30% 90%;
+    --muted-foreground: 15 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 25 75% 47%;
+    --accent-foreground: 45 75% 98%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 45 75% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 40 25% 88%;
+    --input: 40 25% 88%;
+    --ring: 25 63% 32%;
+
+    /* Café Specific Colors */
+    --coffee-dark: 20 40% 25%;
+    --coffee-medium: 25 63% 32%;
+    --coffee-light: 35 45% 85%;
+    --cream: 45 75% 98%;
+    --warm-orange: 25 75% 47%;
+    --soft-teal: 180 25% 65%;
+
+    /* Gradients */
+    --gradient-coffee: linear-gradient(135deg, hsl(var(--coffee-medium)), hsl(var(--warm-orange)));
+    --gradient-cream: linear-gradient(180deg, hsl(var(--cream)), hsl(var(--coffee-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--coffee-medium) / 0.1), hsl(var(--warm-orange) / 0.1));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--coffee-medium) / 0.15);
+    --shadow-warm: 0 8px 30px hsl(var(--warm-orange) / 0.2);
+    --shadow-card: 0 2px 10px hsl(var(--coffee-medium) / 0.1);
 
     --radius: 0.5rem;
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
