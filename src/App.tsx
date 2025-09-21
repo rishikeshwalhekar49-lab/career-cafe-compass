@@ -8,6 +8,11 @@ import { Footer } from "@/components/Footer";
 import CareerDashboard from "./pages/CareerDashboard";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import CareerComparison from "./pages/CareerComparison";
+import Roadmap from "./pages/Roadmap";
+import Quizzes from "./pages/Quizzes";
+import Timeline from "./pages/Timeline";
+import Community from "./pages/Community";
+import FAQs from "./pages/FAQs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,11 +30,11 @@ const App = () => (
               <Route path="/" element={<CareerDashboard />} />
               <Route path="/resume-builder" element={<ResumeBuilder />} />
               <Route path="/career-comparison" element={<CareerComparison />} />
-              <Route path="/roadmap" element={<div className="p-8 text-center">Roadmap feature coming soon!</div>} />
-              <Route path="/quizzes" element={<div className="p-8 text-center">Quizzes feature coming soon!</div>} />
-              <Route path="/timeline" element={<div className="p-8 text-center">Timeline Tracker coming soon!</div>} />
-              <Route path="/community" element={<div className="p-8 text-center">Community Connect coming soon!</div>} />
-              <Route path="/faqs" element={<div className="p-8 text-center">FAQs coming soon!</div>} />
+              <Route path="/roadmap" element={<Roadmap />} />
+              <Route path="/quizzes" element={<Quizzes />} />
+              <Route path="/timeline" element={<Timeline />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/faqs" element={<FAQs />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
