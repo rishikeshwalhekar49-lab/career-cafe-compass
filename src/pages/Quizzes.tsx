@@ -370,7 +370,10 @@ export default function Quizzes() {
                 <Button onClick={resetQuiz} variant="outline" className="flex-1">
                   Take Another Quiz
                 </Button>
-                <Button className="flex-1 bg-gradient-coffee hover:shadow-warm transition-all duration-300">
+                <Button 
+                  onClick={() => window.open('/career-comparison', '_blank')}
+                  className="flex-1 bg-gradient-coffee hover:shadow-warm transition-all duration-300"
+                >
                   View Recommended Careers
                 </Button>
               </div>
