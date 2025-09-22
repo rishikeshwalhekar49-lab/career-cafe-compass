@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, BookOpen, Target, Award, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const streams = {
   science: {
@@ -125,6 +128,39 @@ const streams = {
 export default function Roadmap() {
   const [selectedStream, setSelectedStream] = useState<string>("");
   const [progress, setProgress] = useState<{[key: string]: boolean}>({});
+  const [recommendedStream, setRecommendedStream] = useState<string>("");
+  
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      fetchRecommendedStream();
+    }
+  }, [user]);
+
+  const fetchRecommendedStream = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('quiz_results')
+        .select('recommended_stream')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!error && data?.recommended_stream) {
+        setRecommendedStream(data.recommended_stream);
+        if (!selectedStream) {
+          setSelectedStream(data.recommended_stream);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching recommended stream:', error);
+    }
+  };
 
   const handleMilestoneToggle = (careerName: string) => {
     setProgress(prev => ({
@@ -153,19 +189,34 @@ export default function Roadmap() {
         <Card className="mb-8 shadow-soft">
           <CardHeader>
             <CardTitle className="text-2xl text-primary">Select Your Stream</CardTitle>
-            <CardDescription>Choose your academic stream to see personalized career paths</CardDescription>
+            <CardDescription>
+              {recommendedStream 
+                ? `Based on your quiz results, we recommend the ${recommendedStream.charAt(0).toUpperCase() + recommendedStream.slice(1)} stream`
+                : "Choose your academic stream to see personalized career paths"
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Select onValueChange={setSelectedStream} value={selectedStream}>
-              <SelectTrigger className="max-w-md">
-                <SelectValue placeholder="Select your stream" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="science">Science Stream</SelectItem>
-                <SelectItem value="commerce">Commerce Stream</SelectItem>
-                <SelectItem value="arts">Arts Stream</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-4">
+              {recommendedStream && (
+                <div className="flex items-center space-x-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm text-green-700 font-medium">
+                    Recommended: {recommendedStream.charAt(0).toUpperCase() + recommendedStream.slice(1)} Stream
+                  </span>
+                </div>
+              )}
+              <Select onValueChange={setSelectedStream} value={selectedStream}>
+                <SelectTrigger className="max-w-md">
+                  <SelectValue placeholder="Select your stream" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="science">Science Stream</SelectItem>
+                  <SelectItem value="commerce">Commerce Stream</SelectItem>
+                  <SelectItem value="arts">Arts Stream</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardContent>
         </Card>
 

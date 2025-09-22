@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Brain, BookOpen, Users, ChevronRight, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const quizzes = {
   interest: {
@@ -170,6 +174,10 @@ export default function Quizzes() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<{[key: number]: string}>({});
   const [results, setResults] = useState<any>(null);
+  
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const startQuiz = (quizKey: string) => {
     setSelectedQuiz(quizKey);
@@ -194,7 +202,7 @@ export default function Quizzes() {
     }
   };
 
-  const calculateResults = () => {
+  const calculateResults = async () => {
     const quiz = quizzes[selectedQuiz as keyof typeof quizzes];
     const scores: {[key: string]: number} = {};
     
@@ -214,11 +222,55 @@ export default function Quizzes() {
       scores[a[0]] > scores[b[0]] ? a : b
     );
 
-    setResults({
+    const resultData = {
       scores,
       topResult: topResult[0],
       topScore: topResult[1]
-    });
+    };
+
+    setResults(resultData);
+
+    // Save results to database if user is logged in
+    if (user && selectedQuiz) {
+      try {
+        let recommendedStream = '';
+        if (selectedQuiz === 'interest') {
+          recommendedStream = topResult[0]; // science, commerce, arts
+        } else if (selectedQuiz === 'strengths') {
+          // Map subjects to streams
+          const streamMapping: {[key: string]: string} = {
+            'maths': 'science',
+            'science': 'science', 
+            'computer': 'science',
+            'social': 'arts'
+          };
+          recommendedStream = streamMapping[topResult[0]] || 'arts';
+        } else if (selectedQuiz === 'personality') {
+          // Map personality traits to streams
+          const streamMapping: {[key: string]: string} = {
+            'analytical': 'science',
+            'logical': 'science',
+            'creative': 'arts',
+            'leadership': 'commerce'
+          };
+          recommendedStream = streamMapping[topResult[0]] || 'commerce';
+        }
+
+        await supabase.from('quiz_results').insert({
+          user_id: user.id,
+          quiz_type: selectedQuiz,
+          results: resultData,
+          recommended_stream: recommendedStream
+        });
+      } catch (error: any) {
+        console.error('Error saving quiz results:', error);
+        toast({
+          title: "Warning",
+          description: "Quiz completed but results couldn't be saved.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const resetQuiz = () => {
@@ -371,7 +423,7 @@ export default function Quizzes() {
                   Take Another Quiz
                 </Button>
                 <Button 
-                  onClick={() => window.open('/career-comparison', '_blank')}
+                  onClick={() => navigate('/career-comparison')}
                   className="flex-1 bg-gradient-coffee hover:shadow-warm transition-all duration-300"
                 >
                   View Recommended Careers

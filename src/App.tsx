@@ -14,6 +14,8 @@ import Timeline from "./pages/Timeline";
 import Community from "./pages/Community";
 import FAQs from "./pages/FAQs";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,8 @@ const App = () => (
               <Route path="/timeline" element={<Timeline />} />
               <Route path="/community" element={<Community />} />
               <Route path="/faqs" element={<FAQs />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

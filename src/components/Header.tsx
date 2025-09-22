@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Coffee, User, Menu, X } from "lucide-react";
+import { Coffee, User, Menu, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/useAuth";
 
 const navigationItems = [
   { name: "Career Dashboard", path: "/" },
@@ -16,8 +17,13 @@ const navigationItems = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
@@ -51,12 +57,34 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Profile Button */}
+          {/* Profile/Auth Button */}
           <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm" className="hidden sm:flex items-center space-x-2">
-              <User className="w-4 h-4" />
-              <span>Profile</span>
-            </Button>
+            {user ? (
+              <div className="hidden sm:flex items-center space-x-2">
+                <Link to="/profile">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <User className="w-4 h-4" />
+                    <span>Profile</span>
+                  </Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            ) : (
+              <Link to="/auth">
+                <Button variant="outline" size="sm" className="hidden sm:flex items-center space-x-2">
+                  <User className="w-4 h-4" />
+                  <span>Sign In</span>
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -81,10 +109,35 @@ export function Header() {
                       {item.name}
                     </Link>
                   ))}
-                  <Button className="mt-6" size="lg">
-                    <User className="w-4 h-4 mr-2" />
-                    Create Account
-                  </Button>
+                  {user ? (
+                    <div className="space-y-2">
+                      <Link to="/profile" onClick={() => setIsOpen(false)}>
+                        <Button className="w-full" size="lg">
+                          <User className="w-4 h-4 mr-2" />
+                          Profile
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="outline" 
+                        className="w-full" 
+                        size="lg"
+                        onClick={() => {
+                          handleSignOut();
+                          setIsOpen(false);
+                        }}
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </div>
+                  ) : (
+                    <Link to="/auth" onClick={() => setIsOpen(false)}>
+                      <Button className="mt-6 w-full" size="lg">
+                        <User className="w-4 h-4 mr-2" />
+                        Sign In
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
